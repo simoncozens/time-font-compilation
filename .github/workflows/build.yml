@@ -32,6 +32,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: ${{ matrix.font.repo }}
-        path: source
-    - name: font
+        path: font
+    - name: Build
       run: ${{ matrix.builder.command }} font/${{matrix.font.root}}
