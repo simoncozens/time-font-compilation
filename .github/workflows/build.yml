@@ -19,8 +19,8 @@ jobs:
         builder:
           - name: "Fontmake thin"
             command: "fontmake -o variable -- "
-          - name: "Fontmake fat"
-            command: "fontmake -o variable otf ttf -- "
+          - name: "Fontninja thin"
+            command: "fontninja -o variable -- "
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.10

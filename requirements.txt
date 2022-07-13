@@ -1,1 +1,2 @@
 fontmake>=3.3
+git+https://github.com/simoncozens/fontninja
