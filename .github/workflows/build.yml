@@ -30,7 +30,8 @@ jobs:
       run: pip install -r requirements.txt
     - name: Clone
       uses: actions/checkout@v2
-      repository: ${{ matrix.font.repo }}
-      path: source
+      with:
+        repository: ${{ matrix.font.repo }}
+        path: source
     - name: font
       run: ${{ matrix.builder.command }} font/${{matrix.font.root}}
