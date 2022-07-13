@@ -16,6 +16,9 @@ jobs:
           - name: "Noto Sans Myanmar"
             repo: "notofonts/myanmar"
             root: "sources/NotoSansMyanmar.glyphs"
+          - name: "Roboto Serif"
+            repo: "googlefonts/roboto-serif"
+            root: "sources/RobotoSerif.designspace"
         builder:
           - name: "Fontmake thin"
             command: "fontmake -o variable -- "
