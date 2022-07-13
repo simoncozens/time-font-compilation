@@ -1,0 +1,36 @@
+name: Time it!
+
+on: [push]
+
+jobs:
+  build:
+    name: ${{ matrix.font.name }} - ${{ matrix.builder.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        font:
+          - name: "Noto Sans"
+            repo: "notofonts/latin-greek-cyrillic"
+            root: "sources/NotoSans-MM.glyphs"
+          - name: "Noto Sans Myanmar"
+            repo: "notofonts/myanmar"
+            root: "sources/NotoSansMyanmar.glyphs"
+        builder:
+          - name: "Fontmake thin"
+            command: "fontmake -o variable -- "
+          - name: "Fontmake fat"
+            command: "fontmake -o variable otf ttf -- "
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.10
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    - name: Clone
+      uses: actions/checkout@v2
+      repository: ${{ matrix.font.repo }}
+      path: source
+    - name: font
+      run: ${{ matrix.builder.command }} font/${{matrix.font.root}}
