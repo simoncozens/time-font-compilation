@@ -5,6 +5,7 @@ on: [push]
 jobs:
   build-rust:
     runs-on: ubuntu-latest
+    steps:
     - name: Install Rust
       uses: actions-rs/toolchain@v1
       with:
