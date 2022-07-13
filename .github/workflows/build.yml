@@ -3,7 +3,27 @@ name: Time it!
 on: [push]
 
 jobs:
+  build-rust:
+    runs-on: ubuntu-latest
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: nightly
+    - name: Cargo cache
+      uses: Swatinem/rust-cache@v1
+    - name: Install Rust dependencies
+      run: |
+        cargo install --git https://github.com/simoncozens/rust-font-tools fonticulus
+        cargo install --git https://github.com/simoncozens/rust-font-tools ufo-cu2qu
+        cargo install --git https://github.com/simoncozens/rust-font-tools ufo-decompose
+    - name: Archive built rust utilities
+      uses: actions/upload-artifact@v2
+      with:
+        name: cargo-bin
+        path: ~/.cargo/bin/
+
   build:
+    needs: build-rust
     name: ${{ matrix.font.name }} - ${{ matrix.builder.name }}
     runs-on: ubuntu-latest
     strategy:
@@ -32,19 +52,17 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: "3.10"
+    - name: Install Python dependencies
+      run: pip install -r requirements.txt
     - name: Install Rust
       uses: actions-rs/toolchain@v1
       with:
           toolchain: nightly
-    - name: Cargo cache
-      uses: Swatinem/rust-cache@v1
-    - name: Install Python dependencies
-      run: pip install -r requirements.txt
-    - name: Install Rust dependencies
-      run: |
-        cargo install --git https://github.com/simoncozens/rust-font-tools fonticulus
-        cargo install --git https://github.com/simoncozens/rust-font-tools ufo-cu2qu
-        cargo install --git https://github.com/simoncozens/rust-font-tools ufo-decompose
+    - name: Download Rust utils
+      uses: actions/download-artifact@v3
+      with:
+        name: cargo-bin
+        path: ~/.cargo/bin
     - name: Clone
       uses: actions/checkout@v2
       with:
