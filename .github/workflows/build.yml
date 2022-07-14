@@ -32,21 +32,33 @@ jobs:
       matrix:
         font:
           - name: "Noto Sans"
+            short: notosans
             repo: "notofonts/latin-greek-cyrillic"
             root: "sources/NotoSans-MM.glyphs"
           - name: "Noto Sans Myanmar"
+            short: nsmyanmar
             repo: "notofonts/myanmar"
             root: "sources/NotoSansMyanmar.glyphs"
           - name: "Roboto Serif"
+            short: roboto
             repo: "googlefonts/roboto-serif"
             root: "sources/RobotoSerif.designspace"
         builder:
           - name: "Fontmake thin"
+            short: fontmakethin
             command: "fontmake -o variable -- "
           - name: "Fontninja thin"
+            short: fontninjathin
             command: "fontninja -o variable -- "
           # - name: "Fontninja Rust"
           #   command: "fontninja -o variable --rust -- "
+    outputs:
+      notosans-fontmakethin: ${{ steps.report.outputs.notosans-fontmakethin }}
+      notosans-fontninjathin: ${{ steps.report.outputs.notosans-fontninjathin }}
+      nsmyanmar-fontmakethin: ${{ steps.report.outputs.nsmyanmar-fontmakethin }}
+      nsmyanmar-fontninjathin: ${{ steps.report.outputs.nsmyanmar-fontninjathin }}
+      roboto-fontmakethin: ${{ steps.report.outputs.roboto-fontmakethin }}
+      roboto-fontninjathin: ${{ steps.report.outputs.roboto-fontninjathin }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.10
@@ -70,4 +82,18 @@ jobs:
         repository: ${{ matrix.font.repo }}
         path: font
     - name: Build
-      run: ${{ matrix.builder.command }} font/${{matrix.font.root}}
+      run: /usr/bin/time -f "\t%E real,\t%U user,\t%S sys" -o stats ${{ matrix.builder.command }} font/${{matrix.font.root}}
+    - name: Report
+      id: report
+      run: |
+        result=`cat stats`
+        echo '::set-output name=${{ matrix.font.short }}-${{matrix.builder.short}}::$result'
+
+  report:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: echo "$NEEDS"
